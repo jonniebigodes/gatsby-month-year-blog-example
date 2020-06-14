@@ -1,6 +1,7 @@
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
-
+const _ = require('lodash')
+const moment= require('moment');
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
@@ -18,7 +19,8 @@ exports.createPages = async ({ graphql, actions }) => {
                 slug
               }
               frontmatter {
-                title
+                title,
+                date(formatString: "DD/MM/YYYY")
               }
             }
           }
@@ -33,7 +35,12 @@ exports.createPages = async ({ graphql, actions }) => {
 
   // Create blog posts pages.
   const posts = result.data.allMarkdownRemark.edges
+  // creates a formatted date with moment
+  const parsedYearMonth= item=>moment(item.node.frontmatter.date,"DD/MM/YYYY").format('YYYY-MM')
 
+  // uses the group function from lodash (it's already added by default, if you don't have it you'll need to install it)
+  const groupedByYearMonth=_.groupBy(posts, parsedYearMonth);
+  
   posts.forEach((post, index) => {
     const previous = index === posts.length - 1 ? null : posts[index + 1].node
     const next = index === 0 ? null : posts[index - 1].node
@@ -45,6 +52,7 @@ exports.createPages = async ({ graphql, actions }) => {
         slug: post.node.fields.slug,
         previous,
         next,
+        groupedItems:groupedByYearMonth
       },
     })
   })

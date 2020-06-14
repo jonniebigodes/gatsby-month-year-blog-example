@@ -4,12 +4,13 @@ import { Link, graphql } from "gatsby"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import PeriodList from '../components/PeriodList'
 import { rhythm, scale } from "../utils/typography"
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
   const post = data.markdownRemark
   const siteTitle = data.site.siteMetadata.title
-  const { previous, next } = pageContext
+  const { previous, next,groupedItems } = pageContext
 
   return (
     <Layout location={location} title={siteTitle}>
@@ -38,6 +39,9 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
           </p>
         </header>
         <section dangerouslySetInnerHTML={{ __html: post.html }} />
+        <section>
+          <PeriodList postsByPeriod={groupedItems}/>
+        </section>
         <hr
           style={{
             marginBottom: rhythm(1),
